@@ -27,7 +27,9 @@ Route::prefix('auth')->group(function () {
 Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::post('/auth/logout', [App\Http\Controllers\AuthController::class, 'logout']);
 
-    Route::get('/test', function () {
-        return "ok";
-    });
+    Route::get('/menu', [App\Http\Controllers\MenuController::class, "index"]);
+    Route::post('/menu', [App\Http\Controllers\MenuController::class, "store"]);
+    Route::get('/menu/{id}', [App\Http\Controllers\MenuController::class, "show"]);
+    Route::put('/menu/{id}', [App\Http\Controllers\MenuController::class, "update"]);
+    Route::delete('/menu/{id}', [App\Http\Controllers\MenuController::class, "destroy"]);
 });
