@@ -16,7 +16,11 @@ class CreateTransaksisTable extends Migration
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
             $table->string('nama_pembeli');
-            $table->integer('uang');
+            $table->integer('uang')->default(0);
+            $table->integer("total_bayar")->default(0);
+            $table->integer("kembalian")->default(0);
+            $table->integer('kasir_id'); // Managed by the user who created the transaction
+            $table->boolean('is_paid')->default(false);
             $table->timestamps();
         });
     }
