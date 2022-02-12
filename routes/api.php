@@ -32,4 +32,10 @@ Route::group(["middleware" => ["auth:sanctum"]], function () {
     Route::get('/menu/{id}', [App\Http\Controllers\MenuController::class, "show"]);
     Route::put('/menu/{id}', [App\Http\Controllers\MenuController::class, "update"]);
     Route::delete('/menu/{id}', [App\Http\Controllers\MenuController::class, "destroy"]);
+
+    Route::get('/transaksi', [App\Http\Controllers\TransaksiController::class, "index"]);
+    Route::post('/transaksi', [App\Http\Controllers\TransaksiController::class, "store"]);
+    Route::get('/transaksi/{id}', [App\Http\Controllers\TransaksiController::class, "show"]);
+    Route::put('/transaksi/{id}', [App\Http\Controllers\TransaksiController::class, "update"]);
+    Route::delete('/transaksi/{id}', [App\Http\Controllers\TransaksiController::class, "destroy"]);
 });

@@ -30,7 +30,7 @@ class AuthController extends Controller
             "password" => Hash::make($fields["password"]),
         ]);
 
-        $token = $user->createToken("authToken")->plainTextToken;
+        $token = $user->createToken("authToken", ["role:" . $fields["role"]])->plainTextToken;
         $user["token"] = $token;
 
         return response()->json([
