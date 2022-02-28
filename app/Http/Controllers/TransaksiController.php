@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use App\Models\Menu;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
@@ -40,22 +41,25 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()) return response()->json([
-            "status_code" => 401,
-            "message" => "Unauthorized"
-        ], 401);
+        $user_role = auth()->user()->role;
+        if ($user_role != "kasir") {
+            return response()->json([
+                "status_code" => 403,
+                "message" => "Forbidden, Only Kasir can create a new Transaksi"
+            ], 403);
+        }
 
         $fields = $request->validate([
             "nama_pembeli" => "required|string|max:255",
             "uang" => "nullable|integer",
-            "menu" => "required|array",
+            "detail" => "required|array",
         ]);
 
         $fields["kasir_id"] = auth()->user()->id;
         $fields["total_bayar"] = 0;
 
         $menu_holder = [];
-        foreach ($fields["menu"] as $menu) {
+        foreach ($fields["detail"] as $menu) {
             // Check if menu array has id and jumlah
             if (!isset($menu["id"]) || !isset($menu["jumlah"])) {
                 return response()->json([
@@ -80,6 +84,7 @@ class TransaksiController extends Controller
             }
 
             $data->jumlah = $menu["jumlah"];
+            $data->subtotal = $data->harga * $data->jumlah;
 
             // Push to menu holder
             $menu_holder[] = $data;
@@ -88,10 +93,11 @@ class TransaksiController extends Controller
             $fields["total_bayar"] += $data->harga * $data->jumlah;
         }
 
-        $fields["menu"] = $menu_holder;
+        $fields["detail"] = $menu_holder;
 
         if (!$fields["uang"]) {
             $fields["is_paid"] = 0;
+            $fields["kembalian"] = -$fields["total_bayar"];
         } else {
             if ($fields["uang"] < $fields["total_bayar"]) {
                 return response()->json([
@@ -127,11 +133,10 @@ class TransaksiController extends Controller
      */
     public function show($id)
     {
-        $transaksi_data = Transaksi::find($id);
-        $menu = $transaksi_data->menu;
-        $transaksi_data->menu = $menu;
-        $kasir = $transaksi_data->kasir;
-        $transaksi_data->kasir = $kasir;
+        $transaksi_data = Transaksi::with("kasir")->find($id);
+        foreach ($transaksi_data->detail as $detail) {
+            $detail->menu;
+        }
 
         if (!$transaksi_data) {
             return response()->json([

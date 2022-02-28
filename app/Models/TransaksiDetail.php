@@ -28,5 +28,16 @@ class TransaksiDetail extends Model
 
     protected $hidden = [
         'transaksi_id',
+        'menu_id',
+        'created_at',
+        'updated_at'
     ];
+
+     /**
+     * Get the Transaksi Menu.
+     */
+    public function menu()
+    {
+        return $this->hasOne(Menu::class, "id", "menu_id");
+    }
 }

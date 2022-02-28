@@ -24,9 +24,18 @@ class Transaksi extends Model
     ];
 
     /**
-     * Get the Transaksi menu.
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array<int, string>
      */
-    public function menu()
+    protected $hidden = [
+        'kasir_id',
+    ];
+
+    /**
+     * Get the Transaksi Detail.
+     */
+    public function detail()
     {
         return $this->hasMany(TransaksiDetail::class, "transaksi_id", "id");
     }

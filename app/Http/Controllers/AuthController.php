@@ -30,7 +30,7 @@ class AuthController extends Controller
             "password" => Hash::make($fields["password"]),
         ]);
 
-        $token = $user->createToken("authToken", ["role:" . $fields["role"]])->plainTextToken;
+        $token = $user->createToken("authToken")->plainTextToken;
         $user["token"] = $token;
 
         return response()->json([
@@ -63,7 +63,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = $user->createToken("authToken", ["role:" . $user->role])->plainTextToken;
+        $token = $user->createToken("authToken")->plainTextToken;
         $user["token"] = $token;
 
         return response()->json([
@@ -79,7 +79,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        auth()->user()->tokens->each(function ($token, $key) {
+        auth()->user()->tokens->each(function ($token, $_) {
             $token->delete();
         });
 
